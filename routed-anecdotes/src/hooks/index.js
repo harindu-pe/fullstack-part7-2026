@@ -38,15 +38,24 @@ export const useAnecdotes = () => {
   const addAnecdote = async (anecdote) => {
     try {
       const created = await anecdotesService.createNew(anecdote);
-
-      setAnecdotes(anecdotes.concat(created));
+      setAnecdotes((prev) => prev.concat(created));
     } catch (error) {
       console.error("Error creating anecdote:", error);
+    }
+  };
+
+  const deleteAnecdote = async (id) => {
+    try {
+      await anecdotesService.deleteAnecdote(id);
+      setAnecdotes((prev) => prev.filter((anecdote) => anecdote.id !== id));
+    } catch (error) {
+      console.error("Error deleting anecdote:", error);
     }
   };
 
   return {
     anecdotes,
     addAnecdote,
+    deleteAnecdote,
   };
 };
