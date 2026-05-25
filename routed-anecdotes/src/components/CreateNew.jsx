@@ -8,6 +8,10 @@ const CreateNew = ({ addAnecdote }) => {
   const infoField = useField("text");
   const navigate = useNavigate();
 
+  const { reset: contentReset, ...content } = contentField;
+  const { reset: authorReset, ...author } = authorField;
+  const { reset: infoReset, ...info } = infoField;
+
   const handleSubmit = (e) => {
     e.preventDefault();
     addAnecdote({
@@ -25,15 +29,15 @@ const CreateNew = ({ addAnecdote }) => {
       <form onSubmit={handleSubmit}>
         <div>
           content
-          <input name="content" {...contentField} />
+          <input name="content" {...content} />
         </div>
         <div>
           author
-          <input name="author" {...authorField} />
+          <input name="author" {...author} />
         </div>
         <div>
           url for more info
-          <input name="info" {...infoField} />
+          <input name="info" {...info} />
         </div>
         <button>create</button>
         <button
