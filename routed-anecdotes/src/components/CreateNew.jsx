@@ -36,6 +36,16 @@ const CreateNew = ({ addAnecdote }) => {
           <input name="info" {...infoField} />
         </div>
         <button>create</button>
+        <button
+          type="button"
+          onClick={() => {
+            contentField.reset();
+            authorField.reset();
+            infoField.reset();
+          }}
+        >
+          reset
+        </button>
       </form>
     </div>
   );
