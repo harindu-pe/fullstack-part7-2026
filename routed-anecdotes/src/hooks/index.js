@@ -23,23 +23,26 @@ export const useField = (type) => {
 export const useAnecdotes = () => {
   const [anecdotes, setAnecdotes] = useState([]);
 
-  const fetchAnecdotes = async () => {
-    try {
-      const data = await anecdotesService.getAll();
-      setAnecdotes(data);
-    } catch (error) {
-      console.error("Error fetching anecdotes:", error);
-    }
-  };
-
   useEffect(() => {
+    const fetchAnecdotes = async () => {
+      try {
+        const data = await anecdotesService.getAll();
+        setAnecdotes(data);
+      } catch (error) {
+        console.error("Error fetching anecdotes:", error);
+      }
+    };
     fetchAnecdotes();
   }, []);
 
-  const addAnecdote = (anecdote) => {
-    setAnecdotes(
-      anecdotes.concat({ ...anecdote, id: Math.round(Math.random() * 10000) }),
-    );
+  const addAnecdote = async (anecdote) => {
+    try {
+      const created = await anecdotesService.createNew(anecdote);
+
+      setAnecdotes(anecdotes.concat(created));
+    } catch (error) {
+      console.error("Error creating anecdote:", error);
+    }
   };
 
   return {

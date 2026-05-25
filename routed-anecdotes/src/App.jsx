@@ -1,22 +1,13 @@
-import { useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Menu from "./components/Menu";
-import AnecdoteList from "./components/AnecdoteList";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import About from "./components/About";
-import Footer from "./components/Footer";
+import AnecdoteList from "./components/AnecdoteList";
 import CreateNew from "./components/CreateNew";
+import Footer from "./components/Footer";
+import Menu from "./components/Menu";
 import { useAnecdotes } from "./hooks";
 
 const App = () => {
-  const { anecdotes } = useAnecdotes();
-
-  console.log("Anecdotes in App component:", anecdotes);
-
-  const addAnecdote = (anecdote) => {
-    setAnecdotes(
-      anecdotes.concat({ ...anecdote, id: Math.round(Math.random() * 10000) }),
-    );
-  };
+  const { anecdotes, addAnecdote } = useAnecdotes();
 
   return (
     <Router>
