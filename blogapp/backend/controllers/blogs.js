@@ -1,6 +1,7 @@
 const Blog = require("../models/blog");
 const blogsRouter = require("express").Router();
 const helper = require("../tests/test_helper");
+const { userExtractor } = require("../utils/middleware");
 
 blogsRouter.get("/", (request, response) => {
   Blog.find({})
@@ -10,19 +11,22 @@ blogsRouter.get("/", (request, response) => {
     });
 });
 
-blogsRouter.post("/", async (request, response) => {
+blogsRouter.post("/", userExtractor, async (request, response) => {
+  const user = request.user;
   const blog = new Blog(request.body);
 
   blog.likes = blog.likes ?? 0;
-
-  const users = await helper.usersInDb();
-  blog.user = users[0].id;
+  blog.user = user._id;
 
   if (!blog.title || !blog.url) {
     return response.status(400).send({ error: "title or url missing" });
   }
 
+  user.blogs = user.blogs.concat(blog._id);
+  await user.save();
+
   const savedBlog = await blog.save();
+
   response.status(201).json(savedBlog);
 });
 

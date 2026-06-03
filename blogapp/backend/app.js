@@ -4,10 +4,12 @@ const blogsRouter = require("./controllers/blogs");
 const loginRouter = require("./controllers/login");
 const usersRouter = require("./controllers/users");
 const config = require("./utils/config");
+const middleware = require("./utils/middleware");
 
 const app = express();
 
 mongoose.connect(config.MONGODB_URI);
+app.use(middleware.tokenExtractor);
 
 app.use(express.json());
 
