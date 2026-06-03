@@ -20,6 +20,11 @@ describe("when there are initially some blogs saved", () => {
 
     assert.strictEqual(result.body.length, helper.initialBlogs.length);
   });
+
+  test("blogs has id attribute", async () => {
+    const blogs = await helper.blogsInDb();
+    blogs.forEach((blog) => assert.ok(blog.id, "Blog is missing id attribute"));
+  });
 });
 
 after(async () => {
