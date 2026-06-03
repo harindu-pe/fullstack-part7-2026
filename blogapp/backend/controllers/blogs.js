@@ -48,4 +48,28 @@ blogsRouter.delete("/:id", userExtractor, async (request, response) => {
   response.status(204).end();
 });
 
+blogsRouter.put("/:id", userExtractor, async (request, response) => {
+  const user = request.user;
+  const { title, author, url, likes } = request.body;
+
+  const blog = await Blog.findById(request.params.id);
+
+  if (user.id.toString() !== blog.user.toString()) {
+    return response.status(403).json({ error: "user not authorized" });
+  }
+
+  if (!blog) {
+    return response.status(404).end();
+  }
+
+  blog.title = title;
+  blog.author = author;
+  blog.url = url;
+  blog.likes = likes;
+
+  const updatedBlog = await blog.save();
+
+  response.json(updatedBlog);
+});
+
 module.exports = blogsRouter;
