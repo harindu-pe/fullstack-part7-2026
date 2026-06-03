@@ -47,6 +47,27 @@ describe("when there are initially some blogs saved", () => {
       const titles = blogsAtEnd.map((blog) => blog.title);
       assert(titles.includes("Testing Blog API"));
     });
+
+    test("likes attribute get default value 0 if not passed with request", async () => {
+      const newBlog = {
+        title: "Testing Blog API",
+        author: "Mark Markkanen",
+        url: "https://testurl.com/",
+      };
+
+      await api
+        .post("/api/blogs")
+        .send(newBlog)
+        .expect(201)
+        .expect("Content-Type", /application\/json/);
+
+      const blogsAtEnd = await helper.blogsInDb();
+      const addedBlog = blogsAtEnd.find(
+        (blog) => blog.title === "Testing Blog API",
+      );
+
+      assert.strictEqual(addedBlog.likes, 0);
+    });
   });
 });
 
