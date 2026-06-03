@@ -89,6 +89,47 @@ describe("when there are initially some blogs saved", () => {
       await api.post("/api/blogs").send(newBlog).expect(400);
     });
   });
+
+  describe("deletion of a blog", () => {
+    test("succeeds with status code 204 if id is valid", async () => {
+      blogsAtStart = await helper.blogsInDb();
+      const blogToDelete = blogsAtStart[0];
+
+      await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+
+      const blogsAtEnd = await helper.blogsInDb();
+      const titles = blogsAtEnd.map((b) => b.title);
+
+      assert(!titles.includes(blogToDelete.title));
+      assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1);
+    });
+  });
+
+  describe("when modifying a blog", () => {
+    test("all fields will be updated", async () => {
+      const blogsAtStart = await helper.blogsInDb();
+      const blogToUpdate = blogsAtStart[0];
+
+      const editedBlog = {
+        title: "Updated Title",
+        author: "Updated Author",
+        url: "Updated url",
+        likes: blogToUpdate.likes + 1,
+      };
+
+      await api
+        .put(`/api/blogs/${blogToUpdate.id}`)
+        .send(editedBlog)
+        .expect(200);
+
+      const updatedBlog = await Blog.findById(blogToUpdate.id);
+
+      assert.strictEqual(updatedBlog.title, editedBlog.title);
+      assert.strictEqual(updatedBlog.author, editedBlog.author);
+      assert.strictEqual(updatedBlog.url, editedBlog.url);
+      assert.strictEqual(updatedBlog.likes, editedBlog.likes);
+    });
+  });
 });
 
 after(async () => {
