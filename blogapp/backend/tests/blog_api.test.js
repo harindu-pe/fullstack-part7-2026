@@ -25,6 +25,29 @@ describe("when there are initially some blogs saved", () => {
     const blogs = await helper.blogsInDb();
     blogs.forEach((blog) => assert.ok(blog.id, "Blog is missing id attribute"));
   });
+
+  describe("when adding a new blog", () => {
+    test("blog count increases by one and added blog can be found", async () => {
+      const newBlog = {
+        title: "Testing Blog API",
+        author: "Mark Markkanen",
+        url: "https://testurl.com/",
+        likes: 5,
+      };
+
+      await api
+        .post("/api/blogs")
+        .send(newBlog)
+        .expect(201)
+        .expect("Content-Type", /application\/json/);
+
+      const blogsAtEnd = await helper.blogsInDb();
+      assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1);
+
+      const titles = blogsAtEnd.map((blog) => blog.title);
+      assert(titles.includes("Testing Blog API"));
+    });
+  });
 });
 
 after(async () => {
