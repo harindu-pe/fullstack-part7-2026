@@ -68,6 +68,26 @@ describe("when there are initially some blogs saved", () => {
 
       assert.strictEqual(addedBlog.likes, 0);
     });
+
+    test("posting a blog without title causes response 400", async () => {
+      const newBlog = {
+        author: "Mark Markkanen",
+        url: "https://testurl.com/",
+        likes: 5,
+      };
+
+      await api.post("/api/blogs").send(newBlog).expect(400);
+    });
+
+    test("posting a blog without url causes response 400", async () => {
+      const newBlog = {
+        title: "Testing Blog API",
+        author: "Mark Markkanen",
+        likes: 5,
+      };
+
+      await api.post("/api/blogs").send(newBlog).expect(400);
+    });
   });
 });
 

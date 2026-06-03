@@ -12,6 +12,10 @@ blogsRouter.post("/", (request, response) => {
 
   blog.likes = blog.likes ?? 0;
 
+  if (!blog.title || !blog.url) {
+    return response.status(400).send({ error: "title or url missing" });
+  }
+
   blog.save().then((result) => {
     response.status(201).json(result);
   });
