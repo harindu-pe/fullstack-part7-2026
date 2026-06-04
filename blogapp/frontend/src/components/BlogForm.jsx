@@ -1,14 +1,18 @@
 import { useState } from "react";
 import blogService from "../services/blogs";
 
-const BlogForm = () => {
+const BlogForm = ({ notifyWith }) => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
 
-  const handleCreateNew = (event) => {
+  const handleCreateNew = async (event) => {
     event.preventDefault();
-    blogService.create({ title, author, url });
+    const createdBlog = await blogService.create({ title, author, url });
+    notifyWith(
+      `a new blog ${createdBlog.title} by ${createdBlog.author} added`,
+      false,
+    );
     setTitle("");
     setAuthor("");
     setUrl("");
