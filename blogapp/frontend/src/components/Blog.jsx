@@ -1,7 +1,8 @@
 import { useState } from "react";
 import Togglable from "./Togglable";
+import blogService from "../services/blogs";
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, addLike }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -11,6 +12,10 @@ const Blog = ({ blog }) => {
   };
 
   const [visible, setVisible] = useState(false);
+
+  if (!blog) {
+    return null;
+  }
 
   const showWhenVisible = { display: visible ? "" : "none" };
 
@@ -24,7 +29,12 @@ const Blog = ({ blog }) => {
       </div>
       <div style={showWhenVisible}>
         <div>{blog.url}</div>
-        <div>{blog.likes}</div>
+        <div>
+          {blog.likes}
+          <button onClick={() => addLike(blog)} style={{ marginLeft: 5 }}>
+            like
+          </button>
+        </div>
         <div>{blog.author}</div>
       </div>
     </div>

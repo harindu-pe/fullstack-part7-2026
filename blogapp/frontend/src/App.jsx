@@ -51,6 +51,18 @@ const App = () => {
     }
   };
 
+  const addLike = async (blog) => {
+    console.log(blog);
+
+    const newBlog = { ...blog, likes: blog.likes + 1, user: blog.user.id };
+    try {
+      const updatedBlog = await blogService.update(newBlog);
+      setBlogs(blogs.map((b) => (b.id === blog.id ? updatedBlog : b)));
+    } catch (error) {
+      console.log("Error while trying to like a blog:", error);
+    }
+  };
+
   if (user === null) {
     return <Login setUser={setUser} />;
   }
@@ -71,7 +83,7 @@ const App = () => {
       </Togglable>
 
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} addLike={addLike} />
       ))}
     </div>
   );
