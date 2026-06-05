@@ -1,26 +1,26 @@
-import { useState } from "react";
-import loginService from "../services/login";
-import blogService from "../services/blogs";
+import { useState } from 'react'
+import loginService from '../services/login'
+import blogService from '../services/blogs'
 
 const Login = ({ setUser }) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
 
   const handleLogin = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
     try {
-      const user = await loginService.login({ username, password });
-      blogService.setToken(user.token);
-      window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user));
-      setUser(user);
-      setUsername("");
-      setPassword("");
+      const user = await loginService.login({ username, password })
+      blogService.setToken(user.token)
+      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
+      setUser(user)
+      setUsername('')
+      setPassword('')
     } catch (e) {
-      console.log(e);
-      console.log("wrong credentials");
+      console.log(e)
+      console.log('wrong credentials')
     }
-  };
+  }
 
   return (
     <div>
@@ -49,7 +49,7 @@ const Login = ({ setUser }) => {
         <button type="submit">login</button>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login

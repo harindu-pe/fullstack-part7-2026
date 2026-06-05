@@ -1,38 +1,36 @@
-import { useState } from "react";
-import Togglable from "./Togglable";
-import blogService from "../services/blogs";
+import { useState } from 'react'
 
 const Blog = ({ blog, addLike, currentUser, removeBlog }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
-    border: "solid",
+    border: 'solid',
     borderWidth: 1,
     marginBottom: 5,
-  };
+  }
 
-  const [visible, setVisible] = useState(false);
-  const showWhenVisible = { display: visible ? "" : "none" };
+  const [visible, setVisible] = useState(false)
+  const showWhenVisible = { display: visible ? '' : 'none' }
 
   if (!blog) {
-    return null;
+    return null
   }
 
   const canBeRemoved = () =>
-    currentUser && currentUser.username === blog.user.username;
+    currentUser && currentUser.username === blog.user.username
 
   const handleRemove = () => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
-      removeBlog(blog);
+      removeBlog(blog)
     }
-  };
+  }
 
   return (
     <div style={blogStyle}>
       <div>
         {blog.title}
         <button onClick={() => setVisible(!visible)}>
-          {visible ? "hide" : "view"}
+          {visible ? 'hide' : 'view'}
         </button>
       </div>
       <div style={showWhenVisible}>
@@ -53,7 +51,7 @@ const Blog = ({ blog, addLike, currentUser, removeBlog }) => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Blog;
+export default Blog
