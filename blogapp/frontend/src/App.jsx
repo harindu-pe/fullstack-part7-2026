@@ -1,10 +1,10 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Blog from "./components/Blog";
 import BlogForm from "./components/BlogForm";
 import Login from "./components/Login";
-import blogService from "./services/blogs";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
+import blogService from "./services/blogs";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -38,6 +38,19 @@ const App = () => {
     setUser(null);
   };
 
+  const addBlog = async (blogObject) => {
+    try {
+      const createdBlog = await blogService.create(blogObject);
+      setBlogs(blogs.concat(createdBlog));
+      notifyWith(
+        `a new blog ${createdBlog.title} by ${createdBlog.author} added`,
+      );
+      blogFormRef.current.toggleVisibility();
+    } catch (error) {
+      console.log("Creating new blog failed:", error);
+    }
+  };
+
   if (user === null) {
     return <Login setUser={setUser} />;
   }
@@ -54,7 +67,7 @@ const App = () => {
       </div>
 
       <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-        <BlogForm notifyWith={notifyWith} blogFormRef={blogFormRef} />
+        <BlogForm createBlog={addBlog} />
       </Togglable>
 
       {blogs.map((blog) => (
