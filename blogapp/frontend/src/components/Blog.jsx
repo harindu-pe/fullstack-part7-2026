@@ -2,7 +2,7 @@ import { useState } from "react";
 import Togglable from "./Togglable";
 import blogService from "../services/blogs";
 
-const Blog = ({ blog, addLike }) => {
+const Blog = ({ blog, addLike, currentUser, removeBlog }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -12,12 +12,20 @@ const Blog = ({ blog, addLike }) => {
   };
 
   const [visible, setVisible] = useState(false);
+  const showWhenVisible = { display: visible ? "" : "none" };
 
   if (!blog) {
     return null;
   }
 
-  const showWhenVisible = { display: visible ? "" : "none" };
+  const canBeRemoved = () =>
+    currentUser && currentUser.username === blog.user.username;
+
+  const handleRemove = () => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
+      removeBlog(blog);
+    }
+  };
 
   return (
     <div style={blogStyle}>
@@ -31,11 +39,18 @@ const Blog = ({ blog, addLike }) => {
         <div>{blog.url}</div>
         <div>
           {blog.likes}
-          <button onClick={() => addLike(blog)} style={{ marginLeft: 5 }}>
-            like
-          </button>
+          {currentUser && (
+            <button onClick={() => addLike(blog)} style={{ marginLeft: 5 }}>
+              like
+            </button>
+          )}
         </div>
         <div>{blog.author}</div>
+        {canBeRemoved() && (
+          <button onClick={handleRemove} style={{ marginLeft: 5 }}>
+            remove
+          </button>
+        )}
       </div>
     </div>
   );

@@ -65,6 +65,16 @@ const App = () => {
     }
   };
 
+  const removeBlog = async (blog) => {
+    try {
+      await blogService.remove(blog.id);
+      setBlogs(blogs.filter((b) => b.id !== blog.id));
+      notifyWith(`Blog ${blog.title} by ${blog.author} removed`);
+    } catch (error) {
+      console.log("Error while trying to delete a blog", error);
+    }
+  };
+
   if (user === null) {
     return <Login setUser={setUser} />;
   }
@@ -85,7 +95,13 @@ const App = () => {
       </Togglable>
 
       {sortedBlogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} addLike={addLike} />
+        <Blog
+          key={blog.id}
+          blog={blog}
+          addLike={addLike}
+          currentUser={user}
+          removeBlog={removeBlog}
+        />
       ))}
     </div>
   );
