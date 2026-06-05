@@ -1,7 +1,7 @@
 import { useState } from "react";
 import blogService from "../services/blogs";
 
-const BlogForm = ({ notifyWith }) => {
+const BlogForm = ({ notifyWith, blogFormRef }) => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
@@ -16,6 +16,7 @@ const BlogForm = ({ notifyWith }) => {
     setTitle("");
     setAuthor("");
     setUrl("");
+    blogFormRef.current.toggleVisibility();
   };
 
   return (

@@ -1,14 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Blog from "./components/Blog";
 import BlogForm from "./components/BlogForm";
 import Login from "./components/Login";
 import blogService from "./services/blogs";
 import Notification from "./components/Notification";
+import Togglable from "./components/Togglable";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
   const [notification, setNotification] = useState({ message: null });
+
+  const blogFormRef = useRef();
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -50,7 +53,9 @@ const App = () => {
         </p>
       </div>
 
-      <BlogForm notifyWith={notifyWith} />
+      <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+        <BlogForm notifyWith={notifyWith} blogFormRef={blogFormRef} />
+      </Togglable>
 
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
