@@ -58,5 +58,11 @@ describe("Blog app", () => {
         page.getByText("React patternsMichael Chanview"),
       ).toBeVisible();
     });
+    test("created blog can be liked", async ({ page }) => {
+      await createBlog(page, blog1);
+      await page.getByRole("button", { name: "view" }).click();
+      await page.getByRole("button", { name: "like" }).click();
+      await expect(page.getByText("likes 1")).toBeVisible();
+    });
   });
 });

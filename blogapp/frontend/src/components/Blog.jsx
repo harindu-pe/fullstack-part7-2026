@@ -37,7 +37,7 @@ const Blog = ({ blog, addLike, currentUser, removeBlog }) => {
       <div style={showWhenVisible}>
         <div>{blog.url}</div>
         <div>
-          {blog.likes}
+          <div>likes {blog.likes}</div>
           {currentUser && (
             <button onClick={() => addLike(blog)} style={{ marginLeft: 5 }}>
               like
