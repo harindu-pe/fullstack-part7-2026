@@ -1,29 +1,20 @@
-import { useState } from 'react'
-import loginService from '../services/login'
-import blogService from '../services/blogs'
+import { useState } from "react";
+import loginService from "../services/login";
+import blogService from "../services/blogs";
+import Notification from "./Notification";
 
-const Login = ({ setUser }) => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-
-  const handleLogin = async (event) => {
-    event.preventDefault()
-
-    try {
-      const user = await loginService.login({ username, password })
-      blogService.setToken(user.token)
-      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
-      setUser(user)
-      setUsername('')
-      setPassword('')
-    } catch (e) {
-      console.log(e)
-      console.log('wrong credentials')
-    }
-  }
-
+const Login = ({
+  setUser,
+  handleLogin,
+  username,
+  setUsername,
+  password,
+  setPassword,
+  notification,
+}) => {
   return (
     <div>
+      <Notification notification={notification} />
       <h2>Login</h2>
       <form onSubmit={handleLogin}>
         <div>
@@ -49,7 +40,7 @@ const Login = ({ setUser }) => {
         <button type="submit">login</button>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
