@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, test, vi } from "vitest";
+import userEvent from "@testing-library/user-event";
 import Blog from "./Blog";
 
 describe("Blog", () => {
@@ -30,5 +31,39 @@ describe("Blog", () => {
 
     const likes = screen.queryByText("12");
     expect(likes).not.toBeVisible();
+  });
+
+  test("blog's URL and number of likes are shown when the view button is clicked", async () => {
+    const mockHandler = vi.fn();
+    render(<Blog blog={blog} />);
+
+    const user = userEvent.setup();
+
+    const button = screen.getByText("view");
+    await user.click(button);
+
+    const url = screen.queryByText(
+      "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
+    );
+    expect(url).toBeVisible();
+
+    const likes = screen.queryByText("12");
+    expect(likes).toBeVisible();
+  });
+
+  test("if the like button is clicked twice, the event handler is called twice", async () => {
+    const mockHandler = vi.fn();
+    render(<Blog blog={blog} addLike={mockHandler} currentUser={creator} />);
+
+    const user = userEvent.setup();
+
+    const viewButton = screen.getByText("view");
+    await user.click(viewButton);
+
+    const likeButton = screen.getByText("like");
+    await user.click(likeButton);
+    await user.click(likeButton);
+
+    expect(mockHandler.mock.calls).toHaveLength(2);
   });
 });
