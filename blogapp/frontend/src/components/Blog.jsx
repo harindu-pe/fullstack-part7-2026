@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 
-const Blog = ({ blogs, addLike, currentUser, removeBlog }) => {
+const Blog = ({ blog, addLike, currentUser, removeBlog }) => {
   const id = useParams().id;
 
   const blogStyle = {
@@ -15,8 +15,6 @@ const Blog = ({ blogs, addLike, currentUser, removeBlog }) => {
   const [visible, setVisible] = useState(false);
   const showWhenVisible = { display: visible ? "" : "none" };
 
-  const blog = blogs.find((b) => b.id === id);
-
   const canBeRemoved = () =>
     currentUser && currentUser.username === blog.user.username;
 
@@ -25,6 +23,10 @@ const Blog = ({ blogs, addLike, currentUser, removeBlog }) => {
       removeBlog(blog);
     }
   };
+
+  if (!blog) {
+    return null;
+  }
 
   return (
     <div style={blogStyle} className="blog">

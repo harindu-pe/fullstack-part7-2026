@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, test, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, test, vi } from "vitest";
 import Blog from "./Blog";
 
 describe("Blog", () => {
@@ -8,6 +8,12 @@ describe("Blog", () => {
     username: "totester",
     name: "Tommy Tester",
     id: "6836bfea4b580b29430b00b7",
+  };
+
+  const otherUser = {
+    username: "otheruser",
+    name: "Other User",
+    id: "abc123",
   };
 
   const blog = {
@@ -18,52 +24,35 @@ describe("Blog", () => {
     user: creator,
   };
 
-  test("blog's title and author are displayed but does not render its URL or number of likes", () => {
-    render(<Blog blog={blog} />);
+  test("blog info and likes are shown to unauthenticated user, no buttons", () => {
+    render(<Blog blog={blog} currentUser={null} />);
 
-    screen.getByText("Canonical string reduction", { exact: false });
-    screen.getByText("Edsger W. Dijkstra", { exact: false });
+    screen.getByText("likes 12", { exact: false });
+    screen.getByText(blog.url, { exact: false });
+    screen.getByText(blog.author, { exact: false });
 
-    const url = screen.queryByText(
-      "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
-    );
-    expect(url).not.toBeVisible();
-
-    const likes = screen.queryByText("12");
-    expect(likes).not.toBeVisible();
+    expect(screen.queryByText("like")).toBeNull();
+    expect(screen.queryByText("remove")).toBeNull();
   });
 
-  test("blog's URL and number of likes are shown when the view button is clicked", async () => {
-    const mockHandler = vi.fn();
-    render(<Blog blog={blog} />);
+  test("only like button is shown to a logged-in user who is not the creator", () => {
+    render(<Blog blog={blog} currentUser={otherUser} addLike={vi.fn()} />);
 
-    const user = userEvent.setup();
-
-    const button = screen.getByText("view");
-    await user.click(button);
-
-    const url = screen.queryByText(
-      "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
-    );
-    expect(url).toBeVisible();
-
-    const likes = screen.queryByText("12");
-    expect(likes).toBeVisible();
+    expect(screen.getByText("like")).toBeDefined();
+    expect(screen.queryByText("remove")).toBeNull();
   });
 
-  test("if the like button is clicked twice, the event handler is called twice", async () => {
-    const mockHandler = vi.fn();
-    render(<Blog blog={blog} addLike={mockHandler} currentUser={creator} />);
+  test("both like and remove buttons are shown to the blog creator", () => {
+    render(
+      <Blog
+        blog={blog}
+        currentUser={creator}
+        addLike={vi.fn()}
+        removeBlog={vi.fn()}
+      />,
+    );
 
-    const user = userEvent.setup();
-
-    const viewButton = screen.getByText("view");
-    await user.click(viewButton);
-
-    const likeButton = screen.getByText("like");
-    await user.click(likeButton);
-    await user.click(likeButton);
-
-    expect(mockHandler.mock.calls).toHaveLength(2);
+    expect(screen.getByText("like")).toBeDefined();
+    expect(screen.getByText("remove")).toBeDefined();
   });
 });

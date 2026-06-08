@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, Route, Routes, useNavigate } from "react-router-dom";
+import { Link, Route, Routes, useNavigate, useMatch } from "react-router-dom";
 import Blog from "./components/Blog";
 import BlogForm from "./components/BlogForm";
 import BlogList from "./components/BlogList";
@@ -15,7 +15,8 @@ const App = () => {
   const [password, setPassword] = useState("");
   const [notification, setNotification] = useState({ message: null });
 
-  const blogFormRef = useRef();
+  const match = useMatch("/blogs/:id");
+  const blog = match ? blogs.find((b) => b.id === match.params.id) : null;
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -145,7 +146,7 @@ const App = () => {
           path="/blogs/:id"
           element={
             <Blog
-              blogs={blogs}
+              blog={blog}
               addLike={addLike}
               removeBlog={removeBlog}
               currentUser={user}
