@@ -1,10 +1,11 @@
-import { Container } from "@mui/material";
+import { AppBar, Button, Container, Toolbar, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Link, Route, Routes, useMatch, useNavigate } from "react-router-dom";
 import Blog from "./components/Blog";
 import BlogForm from "./components/BlogForm";
 import BlogList from "./components/BlogList";
 import Login from "./components/Login";
+import Notification from "./components/Notification";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 
@@ -14,9 +15,6 @@ const App = () => {
   const [notification, setNotification] = useState({ message: null });
 
   const navigation = useNavigate();
-
-  const match = useMatch("/blogs/:id");
-  const blog = match ? blogs.find((b) => b.id === match.params.id) : null;
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -35,27 +33,7 @@ const App = () => {
     setNotification({ message, isError });
     setTimeout(() => {
       setNotification({ message: null });
-    }, 5000);
-  };
-
-  const handleLogout = () => {
-    window.localStorage.removeItem("loggedBlogappUser");
-    setUser(null);
-    navigation("/");
-  };
-
-  const doLogin = async ({ username, password }) => {
-    try {
-      const user = await loginService.login({ username, password });
-
-      window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user));
-      blogService.setToken(user.token);
-      setUser(user);
-      navigation("/");
-    } catch {
-      notifyWith("wrong username or password", true);
-      console.log("wrong credentials");
-    }
+    }, 15000);
   };
 
   const addBlog = async (blogObject) => {
@@ -94,23 +72,76 @@ const App = () => {
     }
   };
 
+  const doLogin = async ({ username, password }) => {
+    try {
+      const user = await loginService.login({ username, password });
+
+      window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user));
+      blogService.setToken(user.token);
+      setUser(user);
+      navigation("/");
+    } catch {
+      notifyWith("wrong username or password", true);
+      console.log("wrong credentials");
+    }
+  };
+
+  const handleLogout = async () => {
+    window.localStorage.removeItem("loggedBlogappUser");
+    setUser(null);
+    navigation("/");
+  };
+
+  const match = useMatch("/blogs/:id");
+  const blog = match ? blogs.find((b) => b.id === match.params.id) : null;
+
   return (
     <Container>
-      <div>
-        <Link to="/">blogs</Link>
-        {user && (
-          <Link to="/create" style={{ marginLeft: 10 }}>
-            new blog
-          </Link>
-        )}
-        <span style={{ marginLeft: 10 }}>
-          {user !== null ? (
-            <button onClick={handleLogout}>logout</button>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            Blog App
+          </Typography>
+          <Button
+            color="inherit"
+            component={Link}
+            to="/"
+            sx={{ "&:hover": { bgcolor: "rgba(255,255,255,0.2)" } }}
+          >
+            blogs
+          </Button>
+          {!user ? (
+            <Button
+              color="inherit"
+              component={Link}
+              to="/login"
+              sx={{ "&:hover": { bgcolor: "rgba(255,255,255,0.2)" } }}
+            >
+              login
+            </Button>
           ) : (
-            <Link to="/login">login</Link>
+            <>
+              <Button
+                color="inherit"
+                component={Link}
+                to="/create"
+                sx={{ "&:hover": { bgcolor: "rgba(255,255,255,0.2)" } }}
+              >
+                new blog
+              </Button>
+              <Button
+                color="inherit"
+                onClick={handleLogout}
+                sx={{ "&:hover": { bgcolor: "rgba(255,255,255,0.2)" } }}
+              >
+                logout
+              </Button>
+            </>
           )}
-        </span>
-      </div>
+        </Toolbar>
+      </AppBar>
+
+      <Notification notification={notification} />
 
       <Routes>
         <Route
