@@ -1,6 +1,12 @@
 const { test, expect, beforeEach, describe } = require("@playwright/test");
 const { loginWith, createBlog } = require("./helper");
 
+const blog1 = {
+  title: "React patterns",
+  author: "Michael Chan",
+  url: "https://reactpatterns.com/",
+};
+
 describe("Blog app", () => {
   beforeEach(async ({ page, request }) => {
     // empty the db here
@@ -33,11 +39,23 @@ describe("Blog app", () => {
       await expect(page.getByText("Matti Luukkainen logged in")).toBeVisible();
     });
 
-    test.only("fails with wrong credentials", async ({ page }) => {
+    test("fails with wrong credentials", async ({ page }) => {
       // ...
       await loginWith(page, "mluukkai", "wrongpassword");
       await expect(
         page.getByText("Invalid username or password"),
+      ).toBeVisible();
+    });
+  });
+
+  describe.only("When logged in", () => {
+    beforeEach(async ({ page }) => {
+      await loginWith(page, "mluukkai", "salainen");
+    });
+    test("a new blog can be created", async ({ page }) => {
+      await createBlog(page, blog1);
+      await expect(
+        page.getByText("React patternsMichael Chanview"),
       ).toBeVisible();
     });
   });
