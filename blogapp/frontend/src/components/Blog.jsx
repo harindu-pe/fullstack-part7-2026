@@ -1,6 +1,9 @@
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 
-const Blog = ({ blog, addLike, currentUser, removeBlog }) => {
+const Blog = ({ blogs, addLike, currentUser, removeBlog }) => {
+  const id = useParams().id;
+
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -12,9 +15,7 @@ const Blog = ({ blog, addLike, currentUser, removeBlog }) => {
   const [visible, setVisible] = useState(false);
   const showWhenVisible = { display: visible ? "" : "none" };
 
-  if (!blog) {
-    return null;
-  }
+  const blog = blogs.find((b) => b.id === id);
 
   const canBeRemoved = () =>
     currentUser && currentUser.username === blog.user.username;
@@ -29,26 +30,17 @@ const Blog = ({ blog, addLike, currentUser, removeBlog }) => {
     <div style={blogStyle} className="blog">
       <div>
         {blog.title}
-        <div>{blog.author}</div>
-        <button onClick={() => setVisible(!visible)}>
-          {visible ? "hide" : "view"}
-        </button>
-      </div>
-      <div style={showWhenVisible}>
         <div>{blog.url}</div>
         <div>
-          <div>likes {blog.likes}</div>
+          <span>likes {blog.likes}</span>
           {currentUser && (
             <button onClick={() => addLike(blog)} style={{ marginLeft: 5 }}>
               like
             </button>
           )}
         </div>
-        {canBeRemoved() && (
-          <button onClick={handleRemove} style={{ marginLeft: 5 }}>
-            remove
-          </button>
-        )}
+        <div>{blog.author}</div>
+        {canBeRemoved() && <button onClick={handleRemove}>remove</button>}
       </div>
     </div>
   );

@@ -1,5 +1,4 @@
-import React from "react";
-import Blog from "./Blog";
+import { Link } from "react-router-dom";
 
 const BlogList = ({ blogs, addLike, removeBlog, user }) => {
   const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes);
@@ -8,13 +7,22 @@ const BlogList = ({ blogs, addLike, removeBlog, user }) => {
     <>
       <h2>blogs</h2>
       {sortedBlogs.map((blog) => (
-        <Blog
+        <Link
           key={blog.id}
-          blog={blog}
-          addLike={addLike}
-          removeBlog={removeBlog}
-          currentUser={user}
-        />
+          to={`/blogs/${blog.id}`}
+          style={{ textDecoration: "none" }}
+        >
+          <div
+            style={{
+              padding: 5,
+              border: "solid",
+              borderWidth: 1,
+              marginBottom: 5,
+            }}
+          >
+            {blog.title} by {blog.author}
+          </div>
+        </Link>
       ))}
     </>
   );

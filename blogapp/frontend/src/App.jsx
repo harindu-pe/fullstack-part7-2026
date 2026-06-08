@@ -1,13 +1,10 @@
 import { useEffect, useRef, useState } from "react";
+import { Link, Route, Routes, useNavigate } from "react-router-dom";
 import Blog from "./components/Blog";
-import BlogForm from "./components/BlogForm";
-import Login from "./components/Login";
-import Notification from "./components/Notification";
-import Togglable from "./components/Togglable";
-import loginService from "./services/login";
-import blogService from "./services/blogs";
-import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import BlogList from "./components/BlogList";
+import Login from "./components/Login";
+import blogService from "./services/blogs";
+import loginService from "./services/login";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -99,20 +96,6 @@ const App = () => {
     }
   };
 
-  // if (user === null) {
-  //   return (
-  //     <Login
-  //       setUser={setUser}
-  //       handleLogin={handleLogin}
-  //       username={username}
-  //       setUsername={setUsername}
-  //       password={password}
-  //       setPassword={setPassword}
-  //       notification={notification}
-  //     />
-  //   );
-  // }
-
   return (
     <>
       <div>
@@ -148,6 +131,17 @@ const App = () => {
               password={password}
               setPassword={setPassword}
               notification={notification}
+            />
+          }
+        />
+        <Route
+          path="/blogs/:id"
+          element={
+            <Blog
+              blogs={blogs}
+              addLike={addLike}
+              removeBlog={removeBlog}
+              currentUser={user}
             />
           }
         />
