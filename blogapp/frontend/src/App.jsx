@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import { Link, Route, Routes, useNavigate, useMatch } from "react-router-dom";
+import { Container } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Link, Route, Routes, useMatch, useNavigate } from "react-router-dom";
 import Blog from "./components/Blog";
 import BlogForm from "./components/BlogForm";
 import BlogList from "./components/BlogList";
@@ -10,10 +11,9 @@ import loginService from "./services/login";
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
-  const navigate = useNavigate();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const [notification, setNotification] = useState({ message: null });
+
+  const navigation = useNavigate();
 
   const match = useMatch("/blogs/:id");
   const blog = match ? blogs.find((b) => b.id === match.params.id) : null;
@@ -41,25 +41,20 @@ const App = () => {
   const handleLogout = () => {
     window.localStorage.removeItem("loggedBlogappUser");
     setUser(null);
-    navigate("/");
+    navigation("/");
   };
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
-
+  const doLogin = async ({ username, password }) => {
     try {
       const user = await loginService.login({ username, password });
-      blogService.setToken(user.token);
+
       window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user));
+      blogService.setToken(user.token);
       setUser(user);
-      setUsername("");
-      setPassword("");
-      notifyWith(`Login succesful`);
-      navigate("/");
-    } catch (e) {
-      console.log(e);
+      navigation("/");
+    } catch {
+      notifyWith("wrong username or password", true);
       console.log("wrong credentials");
-      notifyWith(`Invalid username or password`, true);
     }
   };
 
@@ -70,7 +65,7 @@ const App = () => {
       notifyWith(
         `a new blog ${createdBlog.title} by ${createdBlog.author} added`,
       );
-      navigate("/");
+      navigation("/");
     } catch (error) {
       console.log("Creating new blog failed:", error);
     }
@@ -93,14 +88,14 @@ const App = () => {
       await blogService.remove(blog.id);
       setBlogs(blogs.filter((b) => b.id !== blog.id));
       notifyWith(`Blog ${blog.title} by ${blog.author} removed`);
-      navigate("/");
+      navigation("/");
     } catch (error) {
       console.log("Error while trying to delete a blog", error);
     }
   };
 
   return (
-    <>
+    <Container>
       <div>
         <Link to="/">blogs</Link>
         {user && (
@@ -129,19 +124,7 @@ const App = () => {
             />
           }
         />
-        <Route
-          path="/login"
-          element={
-            <Login
-              handleLogin={handleLogin}
-              username={username}
-              setUsername={setUsername}
-              password={password}
-              setPassword={setPassword}
-              notification={notification}
-            />
-          }
-        />
+        <Route path="/login" element={<Login doLogin={doLogin} />} />
         <Route
           path="/blogs/:id"
           element={
@@ -155,20 +138,7 @@ const App = () => {
         />
         <Route path="/create" element={<BlogForm createBlog={addBlog} />} />
       </Routes>
-    </>
-    // <div>
-    //   <Notification notification={notification} />
-
-    //   <div>
-    //     <p>
-    //       {user.name} logged in <button onClick={handleLogout}>log out</button>
-    //     </p>
-    //   </div>
-
-    //   <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-    //     <BlogForm createBlog={addBlog} />
-    //   </Togglable>
-    // </div>
+    </Container>
   );
 };
 

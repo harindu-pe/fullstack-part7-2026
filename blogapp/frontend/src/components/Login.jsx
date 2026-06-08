@@ -1,43 +1,52 @@
 import { useState } from "react";
-import loginService from "../services/login";
-import blogService from "../services/blogs";
-import Notification from "./Notification";
 
-const Login = ({
-  setUser,
-  handleLogin,
-  username,
-  setUsername,
-  password,
-  setPassword,
-  notification,
-}) => {
+import { FormControl, Input, Button, InputLabel } from "@mui/material";
+
+const Login = ({ doLogin }) => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLogin = async (event) => {
+    event.preventDefault();
+
+    try {
+      await doLogin({ username, password });
+      setUsername("");
+      setPassword("");
+    } catch (e) {
+      console.log(e);
+      console.log("wrong credentials");
+    }
+  };
+
   return (
     <div>
-      <Notification notification={notification} />
-      <h2>Login</h2>
+      <h2>Log in to application</h2>
       <form onSubmit={handleLogin}>
-        <div>
-          <label>
-            username
-            <input
-              type="text"
+        <div style={{ marginBottom: 8 }}>
+          <FormControl>
+            <InputLabel>username</InputLabel>
+            <Input
               value={username}
               onChange={({ target }) => setUsername(target.value)}
             />
-          </label>
+          </FormControl>
         </div>
-        <div>
-          <label>
-            password
-            <input
+        <div style={{ marginBottom: 8 }}>
+          <FormControl>
+            <InputLabel>password</InputLabel>
+            <Input
               type="password"
               value={password}
               onChange={({ target }) => setPassword(target.value)}
             />
-          </label>
+          </FormControl>
         </div>
-        <button type="submit">login</button>
+        <div style={{ marginTop: 8 }}>
+          <Button type="submit" variant="contained">
+            login
+          </Button>
+        </div>
       </form>
     </div>
   );
