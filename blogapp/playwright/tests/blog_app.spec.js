@@ -1,5 +1,5 @@
 const { test, expect, beforeEach, describe } = require("@playwright/test");
-const { loginWith, createBlog } = require("./helper");
+const { loginWith, createBlog, likeTimes } = require("./helper");
 
 const blog1 = {
   title: "React patterns",
@@ -11,6 +11,12 @@ const blog2 = {
   title: "Go To Statement Considered Harmful",
   author: "Edsger W. Dijkstra",
   url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
+};
+
+const blog3 = {
+  title: "Canonical string reduction",
+  author: "Edsger W. Dijkstra",
+  url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
 };
 
 describe("Blog app", () => {
@@ -62,7 +68,7 @@ describe("Blog app", () => {
     });
   });
 
-  describe.only("When logged in", () => {
+  describe("When logged in", () => {
     beforeEach(async ({ page }) => {
       await loginWith(page, "mluukkai", "salainen");
     });
@@ -102,6 +108,53 @@ describe("Blog app", () => {
       await expect(
         page.getByRole("button", { name: "remove" }),
       ).not.toBeVisible();
+    });
+
+    describe("and multiple blogs exist", () => {
+      beforeEach(async ({ page }) => {
+        await createBlog(page, blog1);
+        await createBlog(page, blog2);
+        await createBlog(page, blog3);
+      });
+
+      test("blogs are ordered by the number of likes", async ({ page }) => {
+        await page
+          .locator("div.blog")
+          .filter({ hasText: blog1.title })
+          .getByRole("button", { name: "view" })
+          .click();
+
+        await page
+          .locator("div.blog")
+          .filter({ hasText: blog2.title })
+          .getByRole("button", { name: "view" })
+          .click();
+
+        await page
+          .locator("div.blog")
+          .filter({ hasText: blog3.title })
+          .getByRole("button", { name: "view" })
+          .click();
+
+        const button2 = page
+          .locator("div.blog")
+          .filter({ hasText: blog2.title })
+          .getByRole("button", { name: "like" });
+
+        const button3 = page
+          .locator("div.blog")
+          .filter({ hasText: blog3.title })
+          .getByRole("button", { name: "like" });
+
+        await likeTimes(page, button2, 2);
+        await likeTimes(page, button3, 3);
+
+        const blogDivs = await page.locator("div.blog").all();
+
+        await expect(blogDivs[0]).toContainText(blog3.title);
+        await expect(blogDivs[1]).toContainText(blog2.title);
+        await expect(blogDivs[2]).toContainText(blog1.title);
+      });
     });
   });
 });

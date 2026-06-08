@@ -14,4 +14,14 @@ const createBlog = async (page, blog) => {
   await page.getByRole("button", { name: "create" }).click();
 };
 
-export { loginWith, createBlog };
+const likeTimes = async (page, button, n) => {
+  for (let i = 0; i < n; i++) {
+    await button.click();
+    await button
+      .locator("..")
+      .getByText(`likes ${i + 1}`)
+      .waitFor();
+  }
+};
+
+export { loginWith, createBlog, likeTimes };
