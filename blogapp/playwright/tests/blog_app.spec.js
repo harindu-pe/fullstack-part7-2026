@@ -7,6 +7,12 @@ const blog1 = {
   url: "https://reactpatterns.com/",
 };
 
+const blog2 = {
+  title: "Go To Statement Considered Harmful",
+  author: "Edsger W. Dijkstra",
+  url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
+};
+
 describe("Blog app", () => {
   beforeEach(async ({ page, request }) => {
     // empty the db here
@@ -63,6 +69,20 @@ describe("Blog app", () => {
       await page.getByRole("button", { name: "view" }).click();
       await page.getByRole("button", { name: "like" }).click();
       await expect(page.getByText("likes 1")).toBeVisible();
+    });
+    test("user who added the blog can delete the blog", async ({ page }) => {
+      await createBlog(page, blog1);
+      await page.getByRole("button", { name: "view" }).click();
+
+      page.on("dialog", async (dialog) => {
+        expect(dialog.type()).toBe("confirm");
+        await dialog.accept();
+      });
+
+      await page.getByRole("button", { name: "remove" }).click();
+      await expect(
+        page.getByText("React patternsMichael Chanview"),
+      ).not.toBeVisible();
     });
   });
 });

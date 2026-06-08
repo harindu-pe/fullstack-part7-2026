@@ -27,7 +27,12 @@ blogsRouter.post("/", userExtractor, async (request, response) => {
 
   const savedBlog = await blog.save();
 
-  response.status(201).json(savedBlog);
+  const populatedBlog = await savedBlog.populate("user", {
+    username: 1,
+    name: 1,
+    id: 1,
+  });
+  response.status(201).json(populatedBlog);
 });
 
 blogsRouter.delete("/:id", userExtractor, async (request, response) => {
