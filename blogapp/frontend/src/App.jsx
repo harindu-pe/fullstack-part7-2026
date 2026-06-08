@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, Route, Routes, useNavigate } from "react-router-dom";
 import Blog from "./components/Blog";
+import BlogForm from "./components/BlogForm";
 import BlogList from "./components/BlogList";
 import Login from "./components/Login";
 import blogService from "./services/blogs";
@@ -68,7 +69,7 @@ const App = () => {
       notifyWith(
         `a new blog ${createdBlog.title} by ${createdBlog.author} added`,
       );
-      blogFormRef.current.toggleVisibility();
+      navigate("/");
     } catch (error) {
       console.log("Creating new blog failed:", error);
     }
@@ -91,6 +92,7 @@ const App = () => {
       await blogService.remove(blog.id);
       setBlogs(blogs.filter((b) => b.id !== blog.id));
       notifyWith(`Blog ${blog.title} by ${blog.author} removed`);
+      navigate("/");
     } catch (error) {
       console.log("Error while trying to delete a blog", error);
     }
@@ -100,6 +102,11 @@ const App = () => {
     <>
       <div>
         <Link to="/">blogs</Link>
+        {user && (
+          <Link to="/create" style={{ marginLeft: 10 }}>
+            new blog
+          </Link>
+        )}
         <span style={{ marginLeft: 10 }}>
           {user !== null ? (
             <button onClick={handleLogout}>logout</button>
@@ -145,6 +152,7 @@ const App = () => {
             />
           }
         />
+        <Route path="/create" element={<BlogForm createBlog={addBlog} />} />
       </Routes>
     </>
     // <div>
