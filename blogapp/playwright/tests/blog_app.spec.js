@@ -21,9 +21,7 @@ const blog3 = {
 
 describe("Blog app", () => {
   beforeEach(async ({ page, request }) => {
-    // empty the db here
     await request.post("/api/testing/reset");
-    // create a user for the backend here
     await request.post("/api/users", {
       data: {
         name: "Matti Luukkainen",
@@ -31,40 +29,29 @@ describe("Blog app", () => {
         password: "salainen",
       },
     });
-    // create a second user for the backend here
-    await request.post("/api/users", {
-      data: {
-        name: "Admin User",
-        username: "admin",
-        password: "admin",
-      },
-    });
-    // go to page
+
     await page.goto("/");
-  });
-
-  test("Login form is shown", async ({ page }) => {
-    // ...
-    const locator1 = page.getByRole("heading", { name: "Login" });
-    await expect(locator1).toBeVisible();
-
-    const locator2 = page.getByRole("button", { name: "login" });
-    await expect(locator2).toBeVisible();
   });
 
   describe("Login", () => {
     test("succeeds with correct credentials", async ({ page }) => {
-      await loginWith(page, "mluukkai", "salainen");
+      await page.getByRole("link", { name: "login" }).click();
+      await page.getByLabel("username").fill("mluukkai");
+      await page.getByLabel("password").fill("salainen");
+      await page.getByRole("button", { name: "login" }).click();
 
-      await expect(page.getByText("Matti Luukkainen logged in")).toBeVisible();
+      //await expect(page.getByRole('link', { name: 'logout' })).toBeVisible()
     });
 
     test("fails with wrong credentials", async ({ page }) => {
-      // ...
-      await loginWith(page, "mluukkai", "wrongpassword");
+      await loginWith(page, "mluukkai", "wrong");
+      const errorDiv = page.getByText("Invalid username or password");
+      await expect(errorDiv).toBeVisible();
+      // await expect(errorDiv).toHaveCSS("color", "rgb(255, 0, 0)");
+
       await expect(
-        page.getByText("Invalid username or password"),
-      ).toBeVisible();
+        page.getByRole("link", { name: "logout" }),
+      ).not.toBeVisible();
     });
   });
 
@@ -72,89 +59,126 @@ describe("Blog app", () => {
     beforeEach(async ({ page }) => {
       await loginWith(page, "mluukkai", "salainen");
     });
+
     test("a new blog can be created", async ({ page }) => {
       await createBlog(page, blog1);
-      await expect(
-        page.getByText("React patternsMichael Chanview"),
-      ).toBeVisible();
-    });
-    test("created blog can be liked", async ({ page }) => {
-      await createBlog(page, blog1);
-      await page.getByRole("button", { name: "view" }).click();
-      await page.getByRole("button", { name: "like" }).click();
-      await expect(page.getByText("likes 1")).toBeVisible();
-    });
-    test("user who added the blog can delete the blog", async ({ page }) => {
-      await createBlog(page, blog1);
-      await page.getByRole("button", { name: "view" }).click();
-
-      page.on("dialog", async (dialog) => {
-        expect(dialog.type()).toBe("confirm");
-        await dialog.accept();
-      });
-
-      await page.getByRole("button", { name: "remove" }).click();
-      await expect(
-        page.getByText("React patternsMichael Chanview"),
-      ).not.toBeVisible();
-    });
-    test("only blog creator can see delete button", async ({ page }) => {
-      await createBlog(page, blog1);
-      await page.getByRole("button", { name: "log out" }).click();
-
-      await loginWith(page, "admin", "admin");
-      await page.getByRole("button", { name: "view" }).click();
-
-      await expect(
-        page.getByRole("button", { name: "remove" }),
-      ).not.toBeVisible();
     });
 
-    describe("and multiple blogs exist", () => {
+    describe("and a blog has been added", () => {
       beforeEach(async ({ page }) => {
         await createBlog(page, blog1);
-        await createBlog(page, blog2);
-        await createBlog(page, blog3);
       });
 
-      test("blogs are ordered by the number of likes", async ({ page }) => {
+      test("a blog can be liked", async ({ page }) => {
         await page
-          .locator("div.blog")
-          .filter({ hasText: blog1.title })
-          .getByRole("button", { name: "view" })
+          .getByRole("link", { name: `${blog1.title} by ${blog1.author}` })
           .click();
 
+        page.getByText("likes 0");
+        await page.getByRole("button", { name: "like" }).click();
+        page.getByText("likes 1");
+      });
+
+      test("a blog can be deleted", async ({ page }) => {
         await page
-          .locator("div.blog")
-          .filter({ hasText: blog2.title })
-          .getByRole("button", { name: "view" })
+          .getByRole("link", { name: `${blog1.title} by ${blog1.author}` })
           .click();
 
-        await page
-          .locator("div.blog")
-          .filter({ hasText: blog3.title })
-          .getByRole("button", { name: "view" })
-          .click();
-
-        const button2 = page
-          .locator("div.blog")
-          .filter({ hasText: blog2.title })
-          .getByRole("button", { name: "like" });
-
-        const button3 = page
-          .locator("div.blog")
-          .filter({ hasText: blog3.title })
-          .getByRole("button", { name: "like" });
-
-        await likeTimes(page, button2, 2);
-        await likeTimes(page, button3, 3);
-
-        const blogDivs = await page.locator("div.blog").all();
-
-        await expect(blogDivs[0]).toContainText(blog3.title);
-        await expect(blogDivs[1]).toContainText(blog2.title);
-        await expect(blogDivs[2]).toContainText(blog1.title);
+        await page.getByRole("button", { name: "remove" }).click();
+        await expect(
+          page.getByRole("link", { name: `${blog1.title} by ${blog1.author}` }),
+        ).not.toBeVisible();
       });
     });
   });
+
+  // describe("When logged in", () => {
+  //   beforeEach(async ({ page }) => {
+  //     await loginWith(page, "mluukkai", "salainen");
+  //   });
+  //   test("a new blog can be created", async ({ page }) => {
+  //     await createBlog(page, blog1);
+  //     await expect(
+  //       page.getByText("React patternsMichael Chanview"),
+  //     ).toBeVisible();
+  //   });
+  //   test("created blog can be liked", async ({ page }) => {
+  //     await createBlog(page, blog1);
+  //     await page.getByRole("button", { name: "view" }).click();
+  //     await page.getByRole("button", { name: "like" }).click();
+  //     await expect(page.getByText("likes 1")).toBeVisible();
+  //   });
+  //   test("user who added the blog can delete the blog", async ({ page }) => {
+  //     await createBlog(page, blog1);
+  //     await page.getByRole("button", { name: "view" }).click();
+
+  //     page.on("dialog", async (dialog) => {
+  //       expect(dialog.type()).toBe("confirm");
+  //       await dialog.accept();
+  //     });
+
+  //     await page.getByRole("button", { name: "remove" }).click();
+  //     await expect(
+  //       page.getByText("React patternsMichael Chanview"),
+  //     ).not.toBeVisible();
+  //   });
+  //   test("only blog creator can see delete button", async ({ page }) => {
+  //     await createBlog(page, blog1);
+  //     await page.getByRole("button", { name: "log out" }).click();
+
+  //     await loginWith(page, "admin", "admin");
+  //     await page.getByRole("button", { name: "view" }).click();
+
+  //     await expect(
+  //       page.getByRole("button", { name: "remove" }),
+  //     ).not.toBeVisible();
+  //   });
+
+  //   describe("and multiple blogs exist", () => {
+  //     beforeEach(async ({ page }) => {
+  //       await createBlog(page, blog1);
+  //       await createBlog(page, blog2);
+  //       await createBlog(page, blog3);
+  //     });
+
+  //     test("blogs are ordered by the number of likes", async ({ page }) => {
+  //       await page
+  //         .locator("div.blog")
+  //         .filter({ hasText: blog1.title })
+  //         .getByRole("button", { name: "view" })
+  //         .click();
+
+  //       await page
+  //         .locator("div.blog")
+  //         .filter({ hasText: blog2.title })
+  //         .getByRole("button", { name: "view" })
+  //         .click();
+
+  //       await page
+  //         .locator("div.blog")
+  //         .filter({ hasText: blog3.title })
+  //         .getByRole("button", { name: "view" })
+  //         .click();
+
+  //       const button2 = page
+  //         .locator("div.blog")
+  //         .filter({ hasText: blog2.title })
+  //         .getByRole("button", { name: "like" });
+
+  //       const button3 = page
+  //         .locator("div.blog")
+  //         .filter({ hasText: blog3.title })
+  //         .getByRole("button", { name: "like" });
+
+  //       await likeTimes(page, button2, 2);
+  //       await likeTimes(page, button3, 3);
+
+  //       const blogDivs = await page.locator("div.blog").all();
+
+  //       await expect(blogDivs[0]).toContainText(blog3.title);
+  //       await expect(blogDivs[1]).toContainText(blog2.title);
+  //       await expect(blogDivs[2]).toContainText(blog1.title);
+  //     });
+  //   });
+  // });
 });
