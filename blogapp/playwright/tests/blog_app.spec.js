@@ -25,6 +25,14 @@ describe("Blog app", () => {
         password: "salainen",
       },
     });
+    // create a second user for the backend here
+    await request.post("/api/users", {
+      data: {
+        name: "Admin User",
+        username: "admin",
+        password: "admin",
+      },
+    });
     // go to page
     await page.goto("/");
   });
@@ -82,6 +90,17 @@ describe("Blog app", () => {
       await page.getByRole("button", { name: "remove" }).click();
       await expect(
         page.getByText("React patternsMichael Chanview"),
+      ).not.toBeVisible();
+    });
+    test("only blog creator can see delete button", async ({ page }) => {
+      await createBlog(page, blog1);
+      await page.getByRole("button", { name: "log out" }).click();
+
+      await loginWith(page, "admin", "admin");
+      await page.getByRole("button", { name: "view" }).click();
+
+      await expect(
+        page.getByRole("button", { name: "remove" }),
       ).not.toBeVisible();
     });
   });
