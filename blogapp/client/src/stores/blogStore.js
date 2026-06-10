@@ -17,9 +17,39 @@ const useBlogStore = create((set) => ({
           return { blogs }
         })
       } catch (error) {
+        useNotificationStore.getState().setNotification(error.message, true, 5)
+      }
+    },
+    addLike: async (blog) => {
+      const newBlog = { ...blog, likes: blog.likes + 1, user: blog.user.id }
+      try {
+        const updatedBlog = await blogService.update(newBlog)
+        set((state) => {
+          const blogs = state.blogs.map((b) =>
+            b.id === blog.id ? updatedBlog : b
+          )
+          return { blogs }
+        })
+      } catch (error) {
+        useNotificationStore.getState().setNotification(error.message, true, 5)
+      }
+    },
+    removeBlog: async (blog) => {
+      try {
+        await blogService.remove(blog.id)
+        set((state) => {
+          const blogs = state.blogs.filter((b) => b.id !== blog.id)
+          return { blogs }
+        })
         useNotificationStore
           .getState()
-          .setNotification(`error.message`, true, 5)
+          .setNotification(
+            `Blog ${blog.title} by ${blog.author} removed`,
+            true,
+            5
+          )
+      } catch (error) {
+        useNotificationStore.getState().setNotification(error.message, true, 5)
       }
     },
   },

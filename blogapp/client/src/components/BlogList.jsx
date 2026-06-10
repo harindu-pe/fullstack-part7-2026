@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom'
 import { useBlogs } from '../stores/blogStore'
 
-const BlogList = ({ addLike, removeBlog, user }) => {
+const BlogList = () => {
   const blogs = useBlogs()
-  // throw new Error("simulated error");
+  // throw new Error('simulated error')
 
   return (
     <>

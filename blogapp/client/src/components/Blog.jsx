@@ -1,20 +1,24 @@
-import { useState } from 'react'
 import {
+  Box,
+  Button,
   Card,
   CardContent,
-  Typography,
-  Button,
-  Box,
-  Link,
   Dialog,
-  DialogTitle,
+  DialogActions,
   DialogContent,
   DialogContentText,
-  DialogActions,
+  DialogTitle,
+  Link,
+  Typography,
 } from '@mui/material'
+import { useState } from 'react'
+import { useBlogActions } from '../stores/blogStore'
+import { useNavigate } from 'react-router-dom'
 
-const Blog = ({ blog, addLike, currentUser, removeBlog }) => {
+const Blog = ({ blog, currentUser }) => {
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const navigation = useNavigate()
+  const { addLike, removeBlog } = useBlogActions()
 
   if (!blog) {
     return null
@@ -26,6 +30,7 @@ const Blog = ({ blog, addLike, currentUser, removeBlog }) => {
   const handleRemove = () => {
     removeBlog(blog)
     setConfirmOpen(false)
+    navigation('/')
   }
 
   return (

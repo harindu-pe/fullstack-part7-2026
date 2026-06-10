@@ -40,31 +40,6 @@ const App = () => {
     setNotification(message, isError, seconds)
   }
 
-  const addBlog = async (blogObject) => {
-    try {
-      const createdBlog = await blogService.create(blogObject)
-      setBlogs(blogs.concat(createdBlog))
-      notifyWith(
-        `a new blog ${createdBlog.title} by ${createdBlog.author} added`
-      )
-      navigation('/')
-    } catch (error) {
-      console.log('Creating new blog failed:', error)
-    }
-  }
-
-  const addLike = async (blog) => {
-    console.log(blog)
-
-    const newBlog = { ...blog, likes: blog.likes + 1, user: blog.user.id }
-    try {
-      const updatedBlog = await blogService.update(newBlog)
-      setBlogs(blogs.map((b) => (b.id === blog.id ? updatedBlog : b)))
-    } catch (error) {
-      console.log('Error while trying to like a blog:', error)
-    }
-  }
-
   const removeBlog = async (blog) => {
     try {
       await blogService.remove(blog.id)
@@ -148,23 +123,11 @@ const App = () => {
       <Notification />
       <ShowError>
         <Routes>
-          <Route
-            path="/"
-            element={
-              <BlogList addLike={addLike} removeBlog={removeBlog} user={user} />
-            }
-          />
+          <Route path="/" element={<BlogList />} />
           <Route path="/login" element={<Login doLogin={doLogin} />} />
           <Route
             path="/blogs/:id"
-            element={
-              <Blog
-                blog={blog}
-                addLike={addLike}
-                removeBlog={removeBlog}
-                currentUser={user}
-              />
-            }
+            element={<Blog blog={blog} currentUser={user} />}
           />
           <Route path="/create" element={<BlogForm />} />
           <Route path="*" element={<PageNotFound />} />
