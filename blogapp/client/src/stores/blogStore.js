@@ -5,7 +5,7 @@ import useNotificationStore from './notificationStore'
 const useBlogStore = create((set) => ({
   blogs: [],
   actions: {
-    initialize: async () => {
+    initializeBlogs: async () => {
       const blogs = await blogService.getAll()
       set(() => ({ blogs }))
     },
@@ -45,7 +45,7 @@ const useBlogStore = create((set) => ({
           .getState()
           .setNotification(
             `Blog ${blog.title} by ${blog.author} removed`,
-            true,
+            false,
             5
           )
       } catch (error) {

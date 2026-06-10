@@ -1,10 +1,15 @@
+import { Button, FormControl, Input, InputLabel } from '@mui/material'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useUserActions } from '../stores/userStore'
 
-import { FormControl, Input, Button, InputLabel } from '@mui/material'
-
-const Login = ({ doLogin }) => {
+const Login = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+
+  const navigation = useNavigate()
+
+  const { doLogin } = useUserActions()
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -13,6 +18,7 @@ const Login = ({ doLogin }) => {
       await doLogin({ username, password })
       setUsername('')
       setPassword('')
+      navigation('/')
     } catch (e) {
       console.log(e)
       console.log('wrong credentials')

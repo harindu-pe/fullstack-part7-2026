@@ -1,5 +1,5 @@
 import { AppBar, Button, Container, Toolbar, Typography } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Link, Route, Routes, useNavigate } from 'react-router-dom'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
@@ -8,54 +8,26 @@ import Login from './components/Login'
 import Notification from './components/Notification'
 import PageNotFound from './components/PageNotFound'
 import ShowError from './components/ShowError'
-import blogService from './services/blogs'
-import loginService from './services/login'
 import { useBlogActions } from './stores/blogStore'
-import useNotificationStore from './stores/notificationStore'
+import { useUser, useUserActions } from './stores/userStore'
 
 const App = () => {
-  const { initialize } = useBlogActions()
-
-  const [user, setUser] = useState(null)
-  const setNotification = useNotificationStore((state) => state.setNotification)
-
   const navigation = useNavigate()
 
-  useEffect(() => {
-    initialize()
-  }, [initialize])
+  const user = useUser()
+  const { initializeUser, doLogout } = useUserActions()
+  const { initializeBlogs } = useBlogActions()
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      blogService.setToken(user.token)
-      setUser(user)
-    }
-  }, [])
+    initializeBlogs()
+  }, [initializeBlogs])
 
-  const notifyWith = (message, isError = false) => {
-    const seconds = 5
-    setNotification(message, isError, seconds)
-  }
-
-  const doLogin = async ({ username, password }) => {
-    try {
-      const user = await loginService.login({ username, password })
-
-      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
-      blogService.setToken(user.token)
-      setUser(user)
-      navigation('/')
-    } catch {
-      notifyWith('wrong username or password', true)
-      console.log('wrong credentials')
-    }
-  }
+  useEffect(() => {
+    initializeUser()
+  }, [initializeUser])
 
   const handleLogout = async () => {
-    window.localStorage.removeItem('loggedBlogappUser')
-    setUser(null)
+    doLogout()
     navigation('/')
   }
 
@@ -109,8 +81,8 @@ const App = () => {
       <ShowError>
         <Routes>
           <Route path="/" element={<BlogList />} />
-          <Route path="/login" element={<Login doLogin={doLogin} />} />
-          <Route path="/blogs/:id" element={<Blog currentUser={user} />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/blogs/:id" element={<Blog />} />
           <Route path="/create" element={<BlogForm />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>

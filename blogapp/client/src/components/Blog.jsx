@@ -14,12 +14,14 @@ import {
 import { useState } from 'react'
 import { useMatch, useNavigate } from 'react-router-dom'
 import { useBlogActions, useBlogs } from '../stores/blogStore'
+import { useUser } from '../stores/userStore'
 
-const Blog = ({ currentUser }) => {
+const Blog = () => {
   const [confirmOpen, setConfirmOpen] = useState(false)
 
   const navigation = useNavigate()
 
+  const currentUser = useUser()
   const blogs = useBlogs()
   const { addLike, removeBlog } = useBlogActions()
 
