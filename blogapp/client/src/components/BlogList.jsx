@@ -4,6 +4,7 @@ import { useBlogs } from '../stores/blogStore'
 const BlogList = () => {
   const blogs = useBlogs()
   // throw new Error('simulated error')
+  console.log(blogs)
 
   return (
     <>

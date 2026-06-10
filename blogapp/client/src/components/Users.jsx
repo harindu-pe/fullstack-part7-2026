@@ -1,16 +1,28 @@
-import React from 'react'
+import { useEffect, useReducer, useState } from 'react'
 import {
+  Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
 } from '@mui/material'
 import { Link } from 'react-router-dom'
+import usersService from '../services/users'
 
 const Users = () => {
+  const [users, setUsers] = useState([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await usersService.getAll()
+      setUsers(response)
+    }
+    fetchData()
+  }, [])
+
+  console.log(users)
   return (
     <div>
       <h2>Users</h2>
@@ -26,13 +38,15 @@ const Users = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            <TableRow key={123}>
-              <TableCell>
-                <Link to={`/notes/`}>Test</Link>
-              </TableCell>
-              <TableCell>Test</TableCell>
-              <TableCell>Test</TableCell>
-            </TableRow>
+            {users.map((user) => (
+              <TableRow key={user.username}>
+                <TableCell>
+                  <Link to={`/notes/`}>{user.name}</Link>
+                </TableCell>
+                <TableCell>{user.username}</TableCell>
+                <TableCell>{user.blogs.length}</TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
