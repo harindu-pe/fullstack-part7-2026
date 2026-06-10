@@ -9,6 +9,8 @@ import {
   DialogContentText,
   DialogTitle,
   Link,
+  Stack,
+  TextField,
   Typography,
 } from '@mui/material'
 import { useState } from 'react'
@@ -18,12 +20,13 @@ import { useUser } from '../stores/userStore'
 
 const Blog = () => {
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const [comment, setComment] = useState('')
 
   const navigation = useNavigate()
 
   const currentUser = useUser()
   const blogs = useBlogs()
-  const { addLike, removeBlog } = useBlogActions()
+  const { addLike, removeBlog, addComment } = useBlogActions()
 
   const match = useMatch('/blogs/:id')
   const blog = match ? blogs.find((b) => b.id === match.params.id) : null
@@ -35,10 +38,17 @@ const Blog = () => {
   const canBeRemoved = () =>
     currentUser && currentUser.username === blog.user.username
 
-  const handleRemove = () => {
-    removeBlog(blog)
+  const handleRemove = async () => {
+    await removeBlog(blog)
     setConfirmOpen(false)
     navigation('/')
+  }
+
+  const handleCommentSubmit = async (event) => {
+    event.preventDefault()
+    if (!comment.trim()) return
+    await addComment(blog.id, comment)
+    setComment('')
   }
 
   return (
@@ -86,6 +96,33 @@ const Blog = () => {
               remove
             </Button>
           )}
+        </Box>
+        <Box sx={{ alignItems: 'center', gap: 1, mt: 1 }}>
+          <h2>comments</h2>
+          <form onSubmit={handleCommentSubmit}>
+            <Stack spacing={2} sx={{ display: 'flex' }}>
+              <TextField
+                size="small"
+                value={comment}
+                placeholder="add a comment"
+                onChange={(e) => setComment(e.target.value)}
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                sx={{ alignSelf: 'flex-start' }}
+              >
+                add comment
+              </Button>
+            </Stack>
+          </form>
+          <div>
+            <ul>
+              {blog?.comments.map((c, i) => (
+                <li key={i}>{c}</li>
+              ))}
+            </ul>
+          </div>
         </Box>
       </CardContent>
 

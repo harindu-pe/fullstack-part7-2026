@@ -52,6 +52,18 @@ const useBlogStore = create((set) => ({
         useNotificationStore.getState().setNotification(error.message, true, 5)
       }
     },
+    addComment: async (id, comment) => {
+      try {
+        const updatedBlog = await blogService.addComment(id, comment)
+        set((state) => ({
+          blogs: state.blogs.map(
+            (b) => (b.id === id ? { ...updatedBlog, user: b.user } : b) // ← preserve b.user
+          ),
+        }))
+      } catch (error) {
+        useNotificationStore.getState().setNotification(error.message, true, 5)
+      }
+    },
   },
 }))
 
