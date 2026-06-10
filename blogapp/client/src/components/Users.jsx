@@ -1,4 +1,3 @@
-import { useEffect, useReducer, useState } from 'react'
 import {
   Paper,
   Table,
@@ -8,6 +7,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import usersService from '../services/users'
 
@@ -22,7 +22,6 @@ const Users = () => {
     fetchData()
   }, [])
 
-  console.log(users)
   return (
     <div>
       <h2>Users</h2>
@@ -38,10 +37,10 @@ const Users = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map((user) => (
+            {users?.map((user) => (
               <TableRow key={user.username}>
                 <TableCell>
-                  <Link to={`/notes/`}>{user.name}</Link>
+                  <Link to={`/users/${user.id}`}>{user.name}</Link>
                 </TableCell>
                 <TableCell>{user.username}</TableCell>
                 <TableCell>{user.blogs.length}</TableCell>

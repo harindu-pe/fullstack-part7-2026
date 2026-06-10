@@ -8,6 +8,7 @@ import Login from './components/Login'
 import Notification from './components/Notification'
 import PageNotFound from './components/PageNotFound'
 import ShowError from './components/ShowError'
+import User from './components/User'
 import Users from './components/Users'
 import { useBlogActions } from './stores/blogStore'
 import { useUser, useUserActions } from './stores/userStore'
@@ -94,6 +95,7 @@ const App = () => {
           <Route path="/blogs/:id" element={<Blog />} />
           <Route path="/create" element={<BlogForm />} />
           <Route path="/users" element={<Users />} />
+          <Route path="/users/:id" element={<User />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </ShowError>
