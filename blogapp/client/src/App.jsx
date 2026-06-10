@@ -8,6 +8,7 @@ import Login from './components/Login'
 import Notification from './components/Notification'
 import PageNotFound from './components/PageNotFound'
 import ShowError from './components/ShowError'
+import Users from './components/Users'
 import { useBlogActions } from './stores/blogStore'
 import { useUser, useUserActions } from './stores/userStore'
 
@@ -45,6 +46,14 @@ const App = () => {
             sx={{ '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' } }}
           >
             blogs
+          </Button>
+          <Button
+            color="inherit"
+            component={Link}
+            to="/users"
+            sx={{ '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' } }}
+          >
+            users
           </Button>
           {!user ? (
             <Button
@@ -84,6 +93,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/blogs/:id" element={<Blog />} />
           <Route path="/create" element={<BlogForm />} />
+          <Route path="/users" element={<Users />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </ShowError>
