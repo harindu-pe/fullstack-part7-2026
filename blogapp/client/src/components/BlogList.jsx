@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 
 const BlogList = ({ blogs, addLike, removeBlog, user }) => {
+  // throw new Error("simulated error");
   const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes);
 
   return (

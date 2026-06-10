@@ -8,6 +8,7 @@ import Login from "./components/Login";
 import Notification from "./components/Notification";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
+import ShowError from "./components/ShowError";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -142,33 +143,34 @@ const App = () => {
       </AppBar>
 
       <Notification notification={notification} />
-
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <BlogList
-              blogs={blogs}
-              addLike={addLike}
-              removeBlog={removeBlog}
-              user={user}
-            />
-          }
-        />
-        <Route path="/login" element={<Login doLogin={doLogin} />} />
-        <Route
-          path="/blogs/:id"
-          element={
-            <Blog
-              blog={blog}
-              addLike={addLike}
-              removeBlog={removeBlog}
-              currentUser={user}
-            />
-          }
-        />
-        <Route path="/create" element={<BlogForm createBlog={addBlog} />} />
-      </Routes>
+      <ShowError>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <BlogList
+                blogs={blogs}
+                addLike={addLike}
+                removeBlog={removeBlog}
+                user={user}
+              />
+            }
+          />
+          <Route path="/login" element={<Login doLogin={doLogin} />} />
+          <Route
+            path="/blogs/:id"
+            element={
+              <Blog
+                blog={blog}
+                addLike={addLike}
+                removeBlog={removeBlog}
+                currentUser={user}
+              />
+            }
+          />
+          <Route path="/create" element={<BlogForm createBlog={addBlog} />} />
+        </Routes>
+      </ShowError>
     </Container>
   );
 };
