@@ -11,17 +11,20 @@ import ShowError from './components/ShowError'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import useNotificationStore from './stores/notificationStore'
+import { useBlogActions, useBlogs } from './stores/blogStore'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
+  const blogs = useBlogs()
+  const { initialize } = useBlogActions()
+
   const [user, setUser] = useState(null)
   const setNotification = useNotificationStore((state) => state.setNotification)
 
   const navigation = useNavigate()
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
-  }, [])
+    initialize()
+  }, [initialize])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -148,12 +151,7 @@ const App = () => {
           <Route
             path="/"
             element={
-              <BlogList
-                blogs={blogs}
-                addLike={addLike}
-                removeBlog={removeBlog}
-                user={user}
-              />
+              <BlogList addLike={addLike} removeBlog={removeBlog} user={user} />
             }
           />
           <Route path="/login" element={<Login doLogin={doLogin} />} />
@@ -168,7 +166,7 @@ const App = () => {
               />
             }
           />
-          <Route path="/create" element={<BlogForm createBlog={addBlog} />} />
+          <Route path="/create" element={<BlogForm />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </ShowError>

@@ -1,13 +1,14 @@
 import { Link } from 'react-router-dom'
+import { useBlogs } from '../stores/blogStore'
 
-const BlogList = ({ blogs, addLike, removeBlog, user }) => {
+const BlogList = ({ addLike, removeBlog, user }) => {
+  const blogs = useBlogs()
   // throw new Error("simulated error");
-  const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
 
   return (
     <>
       <h2>blogs</h2>
-      {sortedBlogs.map((blog) => (
+      {blogs.map((blog) => (
         <Link
           key={blog.id}
           to={`/blogs/${blog.id}`}
