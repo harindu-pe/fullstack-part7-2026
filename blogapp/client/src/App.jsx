@@ -10,11 +10,12 @@ import PageNotFound from './components/PageNotFound'
 import ShowError from './components/ShowError'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import useNotificationStore from './stores/notificationStore'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
-  const [notification, setNotification] = useState({ message: null })
+  const setNotification = useNotificationStore((state) => state.setNotification)
 
   const navigation = useNavigate()
 
@@ -32,10 +33,8 @@ const App = () => {
   }, [])
 
   const notifyWith = (message, isError = false) => {
-    setNotification({ message, isError })
-    setTimeout(() => {
-      setNotification({ message: null })
-    }, 15000)
+    const seconds = 5
+    setNotification(message, isError, seconds)
   }
 
   const addBlog = async (blogObject) => {
@@ -143,7 +142,7 @@ const App = () => {
         </Toolbar>
       </AppBar>
 
-      <Notification notification={notification} />
+      <Notification />
       <ShowError>
         <Routes>
           <Route
