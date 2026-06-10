@@ -1,6 +1,6 @@
 import { AppBar, Button, Container, Toolbar, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
-import { Link, Route, Routes, useMatch, useNavigate } from 'react-router-dom'
+import { Link, Route, Routes, useNavigate } from 'react-router-dom'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import BlogList from './components/BlogList'
@@ -10,11 +10,10 @@ import PageNotFound from './components/PageNotFound'
 import ShowError from './components/ShowError'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import { useBlogActions } from './stores/blogStore'
 import useNotificationStore from './stores/notificationStore'
-import { useBlogActions, useBlogs } from './stores/blogStore'
 
 const App = () => {
-  const blogs = useBlogs()
   const { initialize } = useBlogActions()
 
   const [user, setUser] = useState(null)
@@ -40,17 +39,6 @@ const App = () => {
     setNotification(message, isError, seconds)
   }
 
-  const removeBlog = async (blog) => {
-    try {
-      await blogService.remove(blog.id)
-      setBlogs(blogs.filter((b) => b.id !== blog.id))
-      notifyWith(`Blog ${blog.title} by ${blog.author} removed`)
-      navigation('/')
-    } catch (error) {
-      console.log('Error while trying to delete a blog', error)
-    }
-  }
-
   const doLogin = async ({ username, password }) => {
     try {
       const user = await loginService.login({ username, password })
@@ -70,9 +58,6 @@ const App = () => {
     setUser(null)
     navigation('/')
   }
-
-  const match = useMatch('/blogs/:id')
-  const blog = match ? blogs.find((b) => b.id === match.params.id) : null
 
   return (
     <Container>
@@ -125,10 +110,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<BlogList />} />
           <Route path="/login" element={<Login doLogin={doLogin} />} />
-          <Route
-            path="/blogs/:id"
-            element={<Blog blog={blog} currentUser={user} />}
-          />
+          <Route path="/blogs/:id" element={<Blog currentUser={user} />} />
           <Route path="/create" element={<BlogForm />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>

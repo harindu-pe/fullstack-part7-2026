@@ -12,13 +12,19 @@ import {
   Typography,
 } from '@mui/material'
 import { useState } from 'react'
-import { useBlogActions } from '../stores/blogStore'
-import { useNavigate } from 'react-router-dom'
+import { useMatch, useNavigate } from 'react-router-dom'
+import { useBlogActions, useBlogs } from '../stores/blogStore'
 
-const Blog = ({ blog, currentUser }) => {
+const Blog = ({ currentUser }) => {
   const [confirmOpen, setConfirmOpen] = useState(false)
+
   const navigation = useNavigate()
+
+  const blogs = useBlogs()
   const { addLike, removeBlog } = useBlogActions()
+
+  const match = useMatch('/blogs/:id')
+  const blog = match ? blogs.find((b) => b.id === match.params.id) : null
 
   if (!blog) {
     return null
