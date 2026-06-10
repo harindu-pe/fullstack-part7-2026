@@ -6,9 +6,10 @@ import BlogForm from "./components/BlogForm";
 import BlogList from "./components/BlogList";
 import Login from "./components/Login";
 import Notification from "./components/Notification";
+import PageNotFound from "./components/PageNotFound";
+import ShowError from "./components/ShowError";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
-import ShowError from "./components/ShowError";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -169,6 +170,7 @@ const App = () => {
             }
           />
           <Route path="/create" element={<BlogForm createBlog={addBlog} />} />
+          <Route path="*" element={<PageNotFound />} />
         </Routes>
       </ShowError>
     </Container>
