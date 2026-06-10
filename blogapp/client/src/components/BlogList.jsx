@@ -1,8 +1,8 @@
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom'
 
 const BlogList = ({ blogs, addLike, removeBlog, user }) => {
   // throw new Error("simulated error");
-  const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes);
+  const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
 
   return (
     <>
@@ -11,12 +11,12 @@ const BlogList = ({ blogs, addLike, removeBlog, user }) => {
         <Link
           key={blog.id}
           to={`/blogs/${blog.id}`}
-          style={{ textDecoration: "none" }}
+          style={{ textDecoration: 'none' }}
         >
           <div
             style={{
               padding: 5,
-              border: "solid",
+              border: 'solid',
               borderWidth: 1,
               marginBottom: 5,
             }}
@@ -26,7 +26,7 @@ const BlogList = ({ blogs, addLike, removeBlog, user }) => {
         </Link>
       ))}
     </>
-  );
-};
+  )
+}
 
-export default BlogList;
+export default BlogList

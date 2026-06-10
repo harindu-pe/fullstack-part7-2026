@@ -1,4 +1,4 @@
-import { ErrorBoundary, getErrorMessage } from "react-error-boundary";
+import { ErrorBoundary, getErrorMessage } from 'react-error-boundary'
 
 export default function ShowError({ children }) {
   return (
@@ -19,5 +19,5 @@ export default function ShowError({ children }) {
     >
       {children}
     </ErrorBoundary>
-  );
+  )
 }

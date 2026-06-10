@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react'
 import {
   Card,
   CardContent,
@@ -11,22 +11,22 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-} from "@mui/material";
+} from '@mui/material'
 
 const Blog = ({ blog, addLike, currentUser, removeBlog }) => {
-  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false)
 
   if (!blog) {
-    return null;
+    return null
   }
 
   const canBeRemoved = () =>
-    currentUser && currentUser.username === blog.user.username;
+    currentUser && currentUser.username === blog.user.username
 
   const handleRemove = () => {
-    removeBlog(blog);
-    setConfirmOpen(false);
-  };
+    removeBlog(blog)
+    setConfirmOpen(false)
+  }
 
   return (
     <Card sx={{ mt: 2, maxWidth: 600 }} className="blog">
@@ -52,7 +52,7 @@ const Blog = ({ blog, addLike, currentUser, removeBlog }) => {
           Added by {blog.user.name}
         </Typography>
 
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
           <Typography variant="body1">{blog.likes} likes</Typography>
           {currentUser && (
             <Button
@@ -91,7 +91,7 @@ const Blog = ({ blog, addLike, currentUser, removeBlog }) => {
         </DialogActions>
       </Dialog>
     </Card>
-  );
-};
+  )
+}
 
-export default Blog;
+export default Blog

@@ -1,96 +1,94 @@
-const { test, expect, beforeEach, describe } = require("@playwright/test");
-const { loginWith, createBlog, likeTimes } = require("./helper");
+const { test, expect, beforeEach, describe } = require('@playwright/test')
+const { loginWith, createBlog, likeTimes } = require('./helper')
 
 const blog1 = {
-  title: "React patterns",
-  author: "Michael Chan",
-  url: "https://reactpatterns.com/",
-};
+  title: 'React patterns',
+  author: 'Michael Chan',
+  url: 'https://reactpatterns.com/',
+}
 
 const blog2 = {
-  title: "Go To Statement Considered Harmful",
-  author: "Edsger W. Dijkstra",
-  url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
-};
+  title: 'Go To Statement Considered Harmful',
+  author: 'Edsger W. Dijkstra',
+  url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+}
 
 const blog3 = {
-  title: "Canonical string reduction",
-  author: "Edsger W. Dijkstra",
-  url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
-};
+  title: 'Canonical string reduction',
+  author: 'Edsger W. Dijkstra',
+  url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+}
 
-describe("Blog app", () => {
+describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
-    await request.post("/api/testing/reset");
-    await request.post("/api/users", {
+    await request.post('/api/testing/reset')
+    await request.post('/api/users', {
       data: {
-        name: "Matti Luukkainen",
-        username: "mluukkai",
-        password: "salainen",
+        name: 'Matti Luukkainen',
+        username: 'mluukkai',
+        password: 'salainen',
       },
-    });
+    })
 
-    await page.goto("/");
-  });
+    await page.goto('/')
+  })
 
-  describe("Login", () => {
-    test("succeeds with correct credentials", async ({ page }) => {
-      await page.getByRole("link", { name: "login" }).click();
-      await page.getByLabel("username").fill("mluukkai");
-      await page.getByLabel("password").fill("salainen");
-      await page.getByRole("button", { name: "login" }).click();
+  describe('Login', () => {
+    test('succeeds with correct credentials', async ({ page }) => {
+      await page.getByRole('link', { name: 'login' }).click()
+      await page.getByLabel('username').fill('mluukkai')
+      await page.getByLabel('password').fill('salainen')
+      await page.getByRole('button', { name: 'login' }).click()
 
       //await expect(page.getByRole('link', { name: 'logout' })).toBeVisible()
-    });
+    })
 
-    test("fails with wrong credentials", async ({ page }) => {
-      await loginWith(page, "mluukkai", "wrong");
-      const errorDiv = page.getByText("Invalid username or password");
-      await expect(errorDiv).toBeVisible();
+    test('fails with wrong credentials', async ({ page }) => {
+      await loginWith(page, 'mluukkai', 'wrong')
+      const errorDiv = page.getByText('Invalid username or password')
+      await expect(errorDiv).toBeVisible()
       // await expect(errorDiv).toHaveCSS("color", "rgb(255, 0, 0)");
 
-      await expect(
-        page.getByRole("link", { name: "logout" }),
-      ).not.toBeVisible();
-    });
-  });
+      await expect(page.getByRole('link', { name: 'logout' })).not.toBeVisible()
+    })
+  })
 
-  describe("When logged in", () => {
+  describe('When logged in', () => {
     beforeEach(async ({ page }) => {
-      await loginWith(page, "mluukkai", "salainen");
-    });
+      await loginWith(page, 'mluukkai', 'salainen')
+    })
 
-    test("a new blog can be created", async ({ page }) => {
-      await createBlog(page, blog1);
-    });
+    test('a new blog can be created', async ({ page }) => {
+      await createBlog(page, blog1)
+    })
 
-    describe("and a blog has been added", () => {
+    describe('and a blog has been added', () => {
       beforeEach(async ({ page }) => {
-        await createBlog(page, blog1);
-      });
+        await createBlog(page, blog1)
+      })
 
-      test("a blog can be liked", async ({ page }) => {
+      test('a blog can be liked', async ({ page }) => {
         await page
-          .getByRole("link", { name: `${blog1.title} by ${blog1.author}` })
-          .click();
+          .getByRole('link', { name: `${blog1.title} by ${blog1.author}` })
+          .click()
 
-        page.getByText("likes 0");
-        await page.getByRole("button", { name: "like" }).click();
-        page.getByText("likes 1");
-      });
+        page.getByText('likes 0')
+        await page.getByRole('button', { name: 'like' }).click()
+        page.getByText('likes 1')
+      })
 
-      test("a blog can be deleted", async ({ page }) => {
+      test('a blog can be deleted', async ({ page }) => {
         await page
-          .getByRole("link", { name: `${blog1.title} by ${blog1.author}` })
-          .click();
+          .getByRole('link', { name: `${blog1.title} by ${blog1.author}` })
+          .click()
 
-        await page.getByRole("button", { name: "remove" }).click();
+        await page.getByRole('button', { name: 'remove' }).click()
         await expect(
-          page.getByRole("link", { name: `${blog1.title} by ${blog1.author}` }),
-        ).not.toBeVisible();
-      });
-    });
-  });
+          page.getByRole('link', { name: `${blog1.title} by ${blog1.author}` })
+        ).not.toBeVisible()
+      })
+    })
+  })
 
   // describe("When logged in", () => {
   //   beforeEach(async ({ page }) => {
@@ -181,4 +179,4 @@ describe("Blog app", () => {
   //     });
   //   });
   // });
-});
+})

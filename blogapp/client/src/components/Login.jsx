@@ -1,23 +1,23 @@
-import { useState } from "react";
+import { useState } from 'react'
 
-import { FormControl, Input, Button, InputLabel } from "@mui/material";
+import { FormControl, Input, Button, InputLabel } from '@mui/material'
 
 const Login = ({ doLogin }) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
 
   const handleLogin = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
     try {
-      await doLogin({ username, password });
-      setUsername("");
-      setPassword("");
+      await doLogin({ username, password })
+      setUsername('')
+      setPassword('')
     } catch (e) {
-      console.log(e);
-      console.log("wrong credentials");
+      console.log(e)
+      console.log('wrong credentials')
     }
-  };
+  }
 
   return (
     <div>
@@ -49,7 +49,7 @@ const Login = ({ doLogin }) => {
         </div>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login
